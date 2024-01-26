@@ -15,9 +15,18 @@ import CSV
 var studentNames: [String] = []
 var studentGades: [[String]] = []
 
-var savedData: [[String]] = []
+
+
+
+
+var finalGrads: [Double] = []
+var sumOfGrades: Int = 0
+var average: Double = 0.0
+
 
 var optionsSelected = 0
+
+var status = true
 
 print("Generating Data, Pls wait......")
 print("")
@@ -25,7 +34,7 @@ readData()
 print("")
 print("")
 printData()
-while optionsSelected != 10 {
+while optionsSelected != 10 && status {
     menuDisplay()
     if let userInput = readLine(), let selectedOption = Int(userInput) {
         optionsSelected = selectedOption
@@ -34,18 +43,28 @@ while optionsSelected != 10 {
             print("")
             print("")
             print("Which student would you like to choose?")
-            if let userInputString = readLine(), let StudentNames = searchForStudent(studentName: userInputString) {
-                print("\(studentNames)'s grades for this class are:")
+            if let userInputString = readLine(), let studentIndex = searchForStudent(studentName: userInputString) {
+                print("\(studentNames[studentIndex])'s grades in this class is:  ")
+                print("\(finalGrads[studentIndex])")
+//
             } else {
                 print(" name is not found in students. Please try a differnt name")
             }
             
         } else if optionsSelected == 2 {
-            
+            print("")
+            print("")
+            print("Which student would you like to choose?")
+            if let userInputString = readLine(), let studentIndex = searchForStudent(studentName: userInputString) {
+                print("\(studentNames[studentIndex])'s grades for this class are: ")
+                formatArray(studentGradesArray: studentGades[studentIndex])
+            } else {
+                print(" name is not found in students. Please try a differnt name")
+            }
         } else if optionsSelected == 3 {
             print("")
             print("")
-//            readData()
+            printAllGrades()
             
         } else if optionsSelected == 4 {
             print("")
@@ -60,8 +79,10 @@ while optionsSelected != 10 {
         } else if optionsSelected == 8 {
             
         } else if optionsSelected == 9 {
-            
-            
+            status = false
+            print("")
+            print("")
+            print("Have a great rest of your day!")
         } else {
             print("Option Not Found")
         }
@@ -102,6 +123,8 @@ while optionsSelected != 10 {
             print("DEBUG: Error trying to read the file")
         }
     }
+
+
     
 //MARK: Manage Data
     func manageData(row: [String]) {
@@ -109,14 +132,32 @@ while optionsSelected != 10 {
         for i in row.indices {
             if i == 0 {
                 studentNames.append(row[i])
+                
             } else {
                 tempGrades.append(row[i])
+                getAverage(array: row, index: i)
             }
             
-            studentGades.append(tempGrades)
+          
           
         }
+        studentGades.append(tempGrades)
+        
+        
     }
+
+func getAverage(array: [String], index: Int) {
+    
+    for grade in array {
+        
+        if let intGrade = Int(grade) {
+            sumOfGrades += intGrade
+        }
+    }
+    
+    average = Double(sumOfGrades / array.count)
+    finalGrads[index] = average
+}
     
     
     
@@ -124,7 +165,7 @@ while optionsSelected != 10 {
     func searchForStudent(studentName name: String) -> Int? {
         let studentNameLowercasee = name.lowercased()
         for index in studentNames.indices {
-            if studentNames[index] == studentNameLowercasee {
+            if studentNames[index].lowercased() == studentNameLowercasee {
                 return index
             }
         }
@@ -132,9 +173,30 @@ while optionsSelected != 10 {
         return nil
     }
 
+
+func formatArray(studentGradesArray: [String]) {
+    for grade in studentGradesArray {
+//        let joinedString = studentGradesArray.joined(separator: ",")
+//        let gradeString = joinedString.dropLast()
+        print("\(grade)", terminator: ",")
+    }
+}
+
 func printData() {
     print("Studnet Names: \(studentNames)")
+    print("")
+    print("")
     print("Student Grades: \(studentGades)")
 }
+
+func printAllGrades() {
+    for s in studentGades.indices {
+        print("\(studentGades[s]) grades are:", terminator: ",")
+     
+    }
     
+}
+
+
+
 
